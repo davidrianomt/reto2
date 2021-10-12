@@ -9,24 +9,129 @@
     </head>
     <body>
         <div id="contenedor">
-            <table style="border: 1;">
+            
+
+            <p><label>ID </label><input id="id" type="number"/></p>
+            <p><label>Target </label><input id="target" type="text"/></p>
+            <p><label>Capacity </label><input id="capacity" type="number"/></p>
+            <p><label>Category ID </label><input id="category_id" type="number"/></p>
+            <p><label>Name </label><input id="name" type="text"/></p>
+
+            <button onclick="Crear()">Crear</button>
+            <button onclick="Actualizar()">Actualizar</button>
+            <button onclick="">Borrar</button>
+            <br/>
+
+            <table>
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Target</th>
-                        <th>Category</th>
+                        <th>Capacity</th>
+                        <th>Category_id</th>
                         <th>Name</th>
                     </tr>
-
                 </thead>
                 <tbody class="cuerpoTabla">
-                    
                 </tbody>
             </table>
         </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
+        function cargarTabla() {
+            $.ajax({
+                url: 'https://ge1cbc82e84e077-db202109231844.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/library/library',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var resultado = "";
+                    response.items.forEach(function(item) {
+                        resultado+="<tr><td>"+item.id+"</td><td>";
+                        resultado+=item.target+"</td><td>";
+                        resultado+=item.capacity+"</td><td>";
+                        resultado+=item.category_id+"</td><td>";
+                        resultado+=item.name+"</td></tr>";
+                    });
+                    $(".cuerpoTabla").html(resultado);
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                },
+                complete: function(xhr,status){ 
+                    console.log(xhr.responseText);
+                }
+            });
+        }
         
+        function Crear() {
+            var id = $("#id").val();
+            var target = $("#target").val();
+            var capacity = $("#capacity").val();
+            var category_id = $("#category_id").val();
+            var name = $("#name").val();
+
+            $.ajax({
+                url: 'https://ge1cbc82e84e077-db202109231844.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/library/library',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    id:id,
+                    target:target,
+                    capacity:capacity,
+                    category_id:category_id,
+                    name:name
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                },
+                complete: function(xhr,status){ 
+                    cargarTabla();
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
+        
+
+        function Actualizar() {
+            var id = $("#id").val();
+            var target = $("#target").val();
+            var capacity = $("#capacity").val();
+            var category_id = $("#category_id").val();
+            var name = $("#name").val();
+
+            $.ajax({
+                url: 'https://g93b01c51b4cf1d-db202109231132.adb.ca-toronto-1.oraclecloudapps.com/ords/admin/library/library',
+                type: 'PUT',
+                dataType: 'json',
+                data: {
+                    id:id,
+                    target:target,
+                    capacity:capacity,
+                    category_id:category_id,
+                    name:name
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                },
+                complete: function(xhr,status){ 
+                    cargarTabla();
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
+
+
+        $(document).ready(function(){
+            cargarTabla();
+        });
     </script>
 </html>
