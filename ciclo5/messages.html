@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Message</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+            <!-- vinculo a bootstrap -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+            <!-- Temas-->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="estilo.css">
+    </head>
+    <body>
+
+        <div class="container">
+            <div align="center"><h1>Biblioteca - Messages</h1> </div>
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        <li ><a href="library.html"><span class="glyphicon glyphicon-book"> </span> Library</a></li>
+                        <li><a href="category.html"> <span class="glyphicon glyphicon-list"> </span> Category</a></li>
+                        <li class="active"><a href="messages.html"><span class="glyphicon glyphicon-envelope"> </span> Messages</a></li>
+                        <li><a href="client.html"><span class="glyphicon glyphicon-user"></span> Clients</a></li>
+                      </ul>
+                      <ul class="nav navbar-nav navbar-right">
+                        <li><a href="index.html"><span class="glyphicon glyphicon-log-in"></span> Cerrar Sesion</a></li>
+                      </ul>
+                </div>
+              </nav>
+              <hr>
+              <div class="alerta"></div>
+          <div class="row">
+            <div class="col-sm-6 well well-lg">
+                <div id="" class="">
+                    <div class="">
+                        <h3>Nuevo Message:</h3><hr>
+                            <div>
+                                <div class="input-group input-group-lg">
+                                  <span class="input-group-addon">ID: </span>
+                                  <input type="number" class="form-control" id="id" placeholder="Ingrese el # de ID" name="id">
+                                </div>
+                                <br>
+                                <div class="input-group input-group-lg">
+                                  <span class="input-group-addon">messageText: </span>
+                                  <input type="text" class="form-control" id="messageText" placeholder="Ingrese el messageText" name="messageText">
+                                </div>
+                                <br>
+                                <div class="input-group input-group-lg">
+                                  <span class="input-group-addon">Client ID: </span>
+                                  <input type="number" class="form-control" id="client" placeholder="Ingrese el client" name="client">
+                                </div>
+                                <br>
+                                <div class="input-group input-group-lg">
+                                  <span class="input-group-addon">Library ID: </span>
+                                  <input type="number" class="form-control" id="library" placeholder="Ingrese el library" name="library">
+                                </div>
+                                <br>
+                                
+                            </div>
+                            <hr>
+                            <center>
+                                <button class="btn btn-lg btn-success" id="Crear" onclick="Crear()">Crear</button>
+                                <button class="btn btn-lg btn-primary" id="Actualizar" onclick="Actualizar()">Actualizar</button>
+                                <button class="btn btn-lg btn-danger" id="Borrar" onclick="Borrar()">Borrar</button>        
+                            </center>
+                    </div> 
+                </div>
+            </div>
+            <div class="col-sm-1">
+            </div>
+            <div class="col-sm-5 well well-lg">
+                <center><button class="btn btn-lg btn-success" id="Crear" onclick="cargarTabla()"><span class="glyphicon glyphicon-refresh"></span> Consultar</button></center>
+                <hr>
+                <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>messageText</th>
+                                <th>Client</th>
+                                <th>Library</th>
+                            </tr>
+                        </thead>
+                        <tbody class="cuerpoTabla">
+                        </tbody>
+                </table>
+            </div>
+            
+          </div>
+          
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        function cargarTabla() {
+            $.ajax({
+                url: 'http://140.238.183.157:8080/api/Message/all',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    var resultado = "";
+                    response.forEach(function(item) {
+                        resultado+="<tr><td>"+item.idMessage+"</td><td>";
+                        resultado+=item.messageText+"</td><td>";
+                        resultado+=item.client.name+"</td><td>";
+                        resultado+=item.lib.name+"</td></tr>";
+                    });
+                    $(".cuerpoTabla").html(resultado);
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                },
+                complete: function(xhr,status){ 
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+        
+        function Crear() {
+            var data = {
+                messageText : $("#messageText").val(),
+                client: {
+                    idClient: $("#client").val()
+                },
+                lib: {
+                    id: $("#library").val()
+                }
+            };
+
+            var dataToSend = JSON.stringify(data);
+            console.log(dataToSend);
+            $.ajax({
+                url: 'http://140.238.183.157:8080/api/Message/save',
+                type: 'POST',
+                dataType: 'JSON',
+                data: dataToSend,
+                contentType:"application/JSON",
+                statusCode: {
+                    201: function(){
+                        $("#id").val("");
+                        $("#messageText").val("");
+                        $("#client").val("");
+                        $("#library").val("");
+                        cargarTabla();
+                        var alerta = "<div class=\"alert alert-success alert-dismissible\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>    <strong>Correcto!</strong> Registro Ingreresado correctamente.</div>";
+                        $(".alerta").html(alerta);
+                    }
+                    
+                },
+                success: function(response) {
+                    console.log(response);
+                    console.log("SUCCESS");
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                    console.log("ERROR");
+                    var alerta = "<div class=\"alert alert-warning alert-dismissible\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>    <strong>Error!</strong> Registro No fue Ingreresado correctamente.</div>";
+                    $(".alerta").html(alerta);
+                },
+                complete: function(xhr,status){ 
+                    console.log(xhr.responseText);
+                    console.log("COMPLETE");
+                    
+                }
+            });
+        }
+
+        function Actualizar() {
+            var data={
+                id:$("#id").val(),
+                target:$("#target").val(),
+                capacity:$("#capacity").val(),
+                category_id:$("#category_id").val(),
+                name:$("#name").val()
+            }
+
+            var dataToSend = JSON.stringify(data);
+
+            $.ajax({
+                url: 'http://localhost:8080/api/Lib/update',
+                type: 'PUT',
+                dataType: 'JSON',
+                data: dataToSend,
+                contentType:"application/JSON",
+
+                success: function(response) {
+                    console.log(response);
+                    console.log("SUCCESS");
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                    console.log("ERROR");
+                },
+                complete: function(xhr,status){ 
+                    cargarTabla();
+                    console.log(xhr.responseText);
+                    console.log("COMPLETE");
+                    var alerta = "<div class=\"alert alert-warning alert-dismissible\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>    <strong>Correcto!</strong> Registro actualizado correctamente.</div>";
+                    $(".alerta").html(alerta);
+                }
+            });
+        }
+        
+        function Borrar() {
+            var id = $("#id").val();
+            var data={
+                id:$("#id").val()
+            }
+            var dataToSend = JSON.stringify(data);
+            $.ajax({
+                url: 'http://localhost:8080/api/Lib/delete'+id,
+                type: 'DELETE',
+                dataType: 'JSON',
+                contentType:"application/JSON",
+                data: dataToSend,
+                
+                success: function(response) {
+                    console.log(response);
+                    console.log("SUCCESS");
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                    console.log("ERROR");
+                },
+                complete: function(xhr,status){ 
+                    cargarTabla();
+                    console.log(xhr.responseText);
+                    console.log("COMPLETE");
+                    var alerta = "<div class=\"alert alert-danger alert-dismissible\"><a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>    <strong>Eliminado!</strong> Registro eliminado correctamente.</div>";
+                    $(".alerta").html(alerta);
+                }
+            });
+        }
+        $(document).ready(function(){
+            cargarTabla();
+        });
+
+        function Validar(){
+            var id = $("#id").val();
+
+            $.ajax({
+                url: 'https://ge1cbc82e84e077-db202109231844.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/library/library',
+                type: 'DELETE',
+                dataType: 'json',
+                data: {
+                    id:id
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr,status) {
+                    console.log(xhr.responseText);
+                },
+                complete: function(xhr,status){ 
+                    cargarTabla();
+                }
+            });
+        }
+    </script>
+</html>
